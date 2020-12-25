@@ -1,12 +1,5 @@
 package order_closer.dto.log;
 
-/**
- * @author Edward L. 2020-12-21
- * @project Computerized Storehouse
- *          <p>
- *          This POJO class use the lombok, install it in dependencies in pom file
- */
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
