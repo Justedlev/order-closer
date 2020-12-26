@@ -22,7 +22,6 @@ import static order_closer.dto.log.MessageType.*;
 
 @EnableBinding(Processor.class)
 public class OrderCloserService {
-    //"LocalDateTime TYPE - [service name] : message"
 
     ObjectMapper mapper = new ObjectMapper();
 
