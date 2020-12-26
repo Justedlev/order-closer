@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface OrderClosedRepository extends MongoRepository<OrderEntity, Object> {
 
-    @Query("{ 'state' : ?0, 'product.productId' : ?1, 'spotCoord.row' : ?2, 'spotCoord.shelf' : ?3, 'spotCoord.place' : ?4 }")
+    @Query("{ 'state' : , 'product.productId' : ?1, 'spotCoord.row' : ?2, 'spotCoord.shelf' : ?3, 'spotCoord.place' : ?4 }")
     OrderEntity findOrderBy(OrderStateTypeEntity state, Long productId, Integer row, Integer shelf, Integer place);
 
 }
