@@ -63,7 +63,7 @@ public class OrderCloserService {
         Integer shelf = order.getSpotCoord().getShelf();
         Integer place = order.getSpotCoord().getPlace();
         return orderClosedRepository
-                .findByStateAndProductProductIdAndSpotCoordRowAndSpotCoordShelfAndSpotCoordPlace(OPEN, productId, row, shelf, place);
+                .findOrderBy(OPEN, productId, row, shelf, place);
     }
 
     private String createLogAsString(MessageType type, String message) {
