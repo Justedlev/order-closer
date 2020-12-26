@@ -1,19 +1,16 @@
 package order_closer.dto.log;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogDTO {
-    private LocalDate date;
-    private LocalTime time;
-    private MessageType messageType;
-    private String serviceName;
-    private String message;
+    String log;
 }

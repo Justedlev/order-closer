@@ -10,9 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 @Document(collection = "orders")
 public class OrderEntity {
-    private Long timestamp;
     private OrderStateTypeEntity state;
-    private Integer requiredQuantity;
     private SpotCoordEntity spotCoord;
     private ProductEntity product;
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import order_closer.domain.dao.OrderClosedRepository;
 import order_closer.domain.entities.OrderEntity;
 import order_closer.dto.OrderDTO;
+import order_closer.dto.log.Log;
 import order_closer.dto.log.LogDTO;
 import order_closer.dto.log.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +14,15 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.support.MessageBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static order_closer.domain.entities.OrderStateTypeEntity.*;
 import static order_closer.dto.log.MessageType.*;
 
 @EnableBinding(Processor.class)
 public class OrderCloserService {
+    //"LocalDateTime TYPE - [service name] : message"
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -34,23 +36,21 @@ public class OrderCloserService {
         OrderDTO order = mapper.readValue(json, OrderDTO.class);
         OrderEntity orderEntity = getOrder(order);
 
-        LogDTO log = new LogDTO(LocalDate.now(), LocalTime.now(), INFO, OrderCloserService.class.getSimpleName(), null);
+        LogDTO log = new LogDTO();
         if(orderEntity == null) {
-            log.setMessageType(WARNING);
-            log.setMessage("Failed to get data from the database by parameters - " + json);
+            log.setLog(createLogAsString(ERROR, "Failed to get data from the database by parameters - " + json));
             sendLog(mapper.writeValueAsString(log));
             return;
         }
 
         closeAndUpdateOrder(orderEntity);
+        log.setLog(createLogAsString(INFO, "Order was closed successfully - " + json));
 
-        log.setMessage("Order was closed successfully - " + json);
         sendLog(mapper.writeValueAsString(log));
     }
 
     private void closeAndUpdateOrder(OrderEntity orderEntity) {
         orderEntity.setState(CLOSED);
-        orderEntity.setRequiredQuantity(0);
         orderClosedRepository.save(orderEntity);
     }
 
@@ -67,8 +67,8 @@ public class OrderCloserService {
                 .findByStateAndProductProductIdAndSpotCoordRowAndSpotCoordShelfAndSpotCoordPlace(OPEN, productId, row, shelf, place);
     }
 
-    private LogDTO getLog(MessageType type, String message) {
-        String serviceName = OrderCloserService.class.getSimpleName();
-        return new LogDTO(LocalDate.now(), LocalTime.now(), type, serviceName, message);
+    private String createLogAsString(MessageType type, String message) {
+        Log log = new Log(LocalDateTime.now(), type, OrderCloserService.class, message);
+        return log.toString();
     }
 }
