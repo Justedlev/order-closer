@@ -1,7 +1,7 @@
 package order_closer;
 
 /**
- * @author Edward L. 2020-12-21
+ * @author Edward L. 2020-12-23
  * @project Computerized Storehouse
  *          <p>
  *          OrderCloser – service getting data from a middleware about the orders going to be closed.
