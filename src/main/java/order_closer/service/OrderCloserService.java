@@ -34,7 +34,6 @@ public class OrderCloserService {
         OrderDTO order = mapper.readValue(json, OrderDTO.class);
         OrderEntity orderEntity = getOrder(order);
 
-        System.out.println(orderEntity);
         if(orderEntity != null) {
             closeAndUpdateOrder(orderEntity);
             sendLog(INFO, "Order was closed successfully - " + json);
