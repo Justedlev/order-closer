@@ -31,7 +31,6 @@ public class OrderCloserService {
 
     @StreamListener(Processor.INPUT)
     public void takeDataToCloseOrderAndSendToLogs(String json) throws JsonProcessingException {
-        System.out.println(json);
         OrderDTO order = mapper.readValue(json, OrderDTO.class);
         OrderEntity orderEntity = getOrder(order);
 
