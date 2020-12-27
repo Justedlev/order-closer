@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import order_closer.domain.dao.OrderClosedRepository;
 import order_closer.domain.entities.OrderEntity;
 import order_closer.dto.OrderDTO;
-import order_closer.dto.log.Log;
-import order_closer.dto.log.LogDTO;
-import order_closer.dto.log.MessageType;
+import order_closer.dto.log_dto.LogDTO;
+import order_closer.dto.log_dto.LogFormat;
+import order_closer.dto.log_dto.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -15,10 +15,9 @@ import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.support.MessageBuilder;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static order_closer.domain.entities.OrderStateTypeEntity.*;
-import static order_closer.dto.log.MessageType.*;
+import static order_closer.dto.log_dto.MessageType.*;
 
 @EnableBinding(Processor.class)
 public class OrderCloserService {
@@ -32,29 +31,20 @@ public class OrderCloserService {
 
     @StreamListener(Processor.INPUT)
     public void takeDataToCloseOrderAndSendToLogs(String json) throws JsonProcessingException {
+        System.out.println(json);
         OrderDTO order = mapper.readValue(json, OrderDTO.class);
         OrderEntity orderEntity = getOrder(order);
 
-        LogDTO log = new LogDTO();
-        if(orderEntity == null) {
-            log.setLog(createLogAsString(ERROR, "Failed to get data from the database by parameters - " + json));
-            sendLog(mapper.writeValueAsString(log));
-            return;
-        }
-
-        closeAndUpdateOrder(orderEntity);
-        log.setLog(createLogAsString(INFO, "Order was closed successfully - " + json));
-
-        sendLog(mapper.writeValueAsString(log));
+        if(orderEntity != null) {
+            closeAndUpdateOrder(orderEntity);
+            sendLog(INFO, "Order was closed successfully - " + json);
+        } else
+            sendLog(ERROR, "Failed to get data from the database by parameters - " + json);
     }
 
     private void closeAndUpdateOrder(OrderEntity orderEntity) {
         orderEntity.setState(CLOSED);
         orderClosedRepository.save(orderEntity);
-    }
-
-    private void sendLog(String log) {
-        processor.output().send(MessageBuilder.withPayload(log).build()); //out to the 'logs' channel
     }
 
     private OrderEntity getOrder(OrderDTO order) {
@@ -66,8 +56,13 @@ public class OrderCloserService {
                 .findOrderBy(OPEN, productId, row, shelf, place);
     }
 
-    private String createLogAsString(MessageType type, String message) {
-        Log log = new Log(LocalDateTime.now(), type, OrderCloserService.class, message);
-        return log.toString();
+    private void sendLog(MessageType type, String message) {
+        try {
+            LogFormat logFormat = new LogFormat(LocalDateTime.now(), type, OrderCloserService.class, message);
+            String logJson = mapper.writeValueAsString(new LogDTO(logFormat));
+            processor.output().send(MessageBuilder.withPayload(logJson).build());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }

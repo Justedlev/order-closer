@@ -1,4 +1,4 @@
-package order_closer.dto.log;
+package order_closer.dto.log_dto;
 
 public enum MessageType {
     INFO, WARNING, ERROR
