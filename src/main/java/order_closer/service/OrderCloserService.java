@@ -42,6 +42,7 @@ public class OrderCloserService {
     }
 
     private void closeAndUpdateOrder(OrderEntity orderEntity) {
+        orderClosedRepository.delete(orderEntity);
         orderEntity.setState(CLOSED);
         orderClosedRepository.save(orderEntity);
     }
