@@ -9,4 +9,6 @@ import lombok.ToString;
 @ToString
 public class ProductEntity {
     private Long productId;
+    private String productName;
+    private String productUnit;
 }
