@@ -1,14 +1,16 @@
-package order_closer.dto;
+package order_closer.dto.close_order_dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import order_closer.dto.SpotCoordDTO;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO {
+public class CloseOrderDTO {
     private Long productId;
-    private Integer requiredQuantity;
     private SpotCoordDTO spotCoord;
 }

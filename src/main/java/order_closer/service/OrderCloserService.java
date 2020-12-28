@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import order_closer.domain.dao.OrderClosedRepository;
 import order_closer.domain.entities.OrderEntity;
-import order_closer.dto.OrderDTO;
+import order_closer.dto.close_order_dto.CloseOrderDTO;
 import order_closer.dto.log_dto.LogDTO;
 import order_closer.dto.log_dto.LogFormat;
 import order_closer.dto.log_dto.MessageType;
@@ -30,28 +30,36 @@ public class OrderCloserService {
     OrderClosedRepository orderClosedRepository;
 
     @StreamListener(Processor.INPUT)
-    public void takeDataToCloseOrderAndSendToLogs(String json) throws JsonProcessingException {
-        OrderDTO order = mapper.readValue(json, OrderDTO.class);
-        OrderEntity orderEntity = getOrder(order);
+    public void takeDataToCloseOrderAndSendToLogs(String json) {
+        try {
+            CloseOrderDTO orderToClose = mapper.readValue(json, CloseOrderDTO.class);
+            OrderEntity orderEntity = getOrderFromDB(orderToClose);
 
-        if(orderEntity != null) {
-            closeAndUpdateOrder(orderEntity);
-            sendLog(INFO, "Order was closed successfully - " + json);
-        } else
-            sendLog(ERROR, "Failed to get data from the database by parameters - " + json);
+            if(orderEntity != null) {
+                closeAndUpdateOrder(orderEntity);
+                sendLog(INFO, "Order closing data has been sent successfully");
+            } else
+                sendLog(WARNING, String.format("Failure! Orders for this data have not been received - " +
+                        "{'productId':%d,'requiredQuantity':%d,'spotCoord':{'row':%d,'shelf':%d,'place':%d}}",
+                        orderToClose.getProductId(),
+                        orderToClose.getSpotCoord().getRow(),
+                        orderToClose.getSpotCoord().getShelf(),
+                        orderToClose.getSpotCoord().getPlace()));
+        } catch (JsonProcessingException e) {
+            sendLog(ERROR, e.getMessage());
+        }
     }
 
     private void closeAndUpdateOrder(OrderEntity orderEntity) {
-        System.out.println(orderEntity.get_id());
         orderEntity.setState(CLOSED);
         orderClosedRepository.save(orderEntity);
     }
 
-    private OrderEntity getOrder(OrderDTO order) {
-        Long productId = order.getProductId();
-        Integer row = order.getSpotCoord().getRow();
-        Integer shelf = order.getSpotCoord().getShelf();
-        Integer place = order.getSpotCoord().getPlace();
+    private OrderEntity getOrderFromDB(CloseOrderDTO closeOrder) {
+        Long productId = closeOrder.getProductId();
+        Integer row = closeOrder.getSpotCoord().getRow();
+        Integer shelf = closeOrder.getSpotCoord().getShelf();
+        Integer place = closeOrder.getSpotCoord().getPlace();
         return orderClosedRepository
                 .findOrderBy(OPEN, productId, row, shelf, place);
     }
