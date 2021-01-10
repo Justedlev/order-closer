@@ -30,11 +30,10 @@ public class OrderCloserService {
     OrderClosedRepository orderClosedRepository;
 
     @StreamListener(Processor.INPUT)
-    public void takeDataToCloseOrderAndSendToLogs(String json) {
+    public void takeDataToCloseOrder(String json) {
         try {
             CloseOrderDTO orderToClose = mapper.readValue(json, CloseOrderDTO.class);
             OrderEntity orderEntity = getOrderFromDB(orderToClose);
-
             if(orderEntity != null) {
                 closeAndUpdateOrder(orderEntity);
                 sendLog(INFO, "Order closing data has been sent successfully");
