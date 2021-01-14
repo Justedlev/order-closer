@@ -16,7 +16,7 @@ import org.springframework.messaging.support.MessageBuilder;
 
 import java.time.LocalDateTime;
 
-import static order_closer.domain.entities.OrderStateTypeEntity.*;
+import static order_closer.domain.entities.OrderStateType.*;
 import static order_closer.dto.log_dto.MessageType.*;
 
 @EnableBinding(Processor.class)
@@ -39,7 +39,7 @@ public class OrderCloserService {
                 sendLog(INFO, "Order closing data has been sent successfully");
             } else
                 sendLog(WARNING, String.format("Failure! Orders for this data have not been received - " +
-                        "{'productId':%d,'requiredQuantity':%d,'spotCoord':{'row':%d,'shelf':%d,'place':%d}}",
+                        "{'productId':%d,'spotCoord':{'row':%d,'shelf':%d,'place':%d}}",
                         orderToClose.getProductId(),
                         orderToClose.getSpotCoord().getRow(),
                         orderToClose.getSpotCoord().getShelf(),

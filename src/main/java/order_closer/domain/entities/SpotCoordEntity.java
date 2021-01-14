@@ -1,12 +1,10 @@
 package order_closer.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Setter
-@Getter
-@ToString
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SpotCoordEntity {
     private Integer row;
     private Integer shelf;

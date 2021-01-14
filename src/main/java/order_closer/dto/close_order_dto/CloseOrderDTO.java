@@ -1,13 +1,9 @@
 package order_closer.dto.close_order_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import order_closer.dto.SpotCoordDTO;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CloseOrderDTO {

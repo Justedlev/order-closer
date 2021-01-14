@@ -1,5 +1,5 @@
 package order_closer.domain.entities;
 
-public enum OrderStateTypeEntity {
+public enum OrderStateType {
     OPEN, CLOSED
 }

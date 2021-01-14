@@ -1,15 +1,13 @@
 package order_closer.dto.log_dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class LogFormat {
     private LocalDateTime dateTime;
     private MessageType messageType;

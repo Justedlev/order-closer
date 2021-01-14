@@ -1,12 +1,10 @@
 package order_closer.domain.entities;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductEntity {
     private Long productId;
     private String productName;
